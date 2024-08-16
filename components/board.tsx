@@ -1,5 +1,6 @@
 "use client"
 import React, { ChangeEvent, useRef, useState } from 'react'
+import { RotateCcw } from 'lucide-react';
 import AlertDialogs from './alert';
 import {
     AlertDialog,
@@ -31,6 +32,10 @@ const Board = () => {
     const [player1, setPlayer1] = useState("Player 1")
     const [player2, setPlayer2] = useState("Player 2")
 
+    const [turn, setTurn] = useState(true) //true == X && false == O
+    const [drawCount, setDrawCount] = useState(0)
+    const [playedCount, setPlayedCount] = useState(0)
+
     const handleClick = (key: number) => {
         if (lock || data[key]) {
             // Prevent clicking on locked state or already filled cells
@@ -46,6 +51,7 @@ const Board = () => {
 
         // Update count after checking for win
         setCount(count + 1);
+        setTurn(!turn);
 
         // Lock the board if there's a winner
         if (winner) {
@@ -57,10 +63,14 @@ const Board = () => {
             }
             setWin(winner)
             openDialog();
+            setPlayedCount(playedCount+1)
         } else if (newData.every(cell => cell)) {
             setLock(true);
             setWin("draw")
             openDialog();
+            setDrawCount(drawCount+1)
+
+            setPlayedCount(playedCount+1)
         }
     }
     const checkWin = (data: string[]) => {
@@ -89,11 +99,14 @@ const Board = () => {
         setLock(false)
         setCount(0)
         setWin("")
+        setTurn(true)
     }
     const resetGame = () => {
         resetBoard();
         setX(0);
-        setO(0)
+        setO(0);
+        setDrawCount(0);
+        setPlayedCount(0);
     }
 
     const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -108,38 +121,53 @@ const Board = () => {
     }
 
     return (
-        <>
-            <h4 className="text-white font-bold text-2xl mb-3 text-center">TicTacToe Game</h4>
-            <div className="grid grid-cols-2 gap-2 my-3">
-                <div className='bg-white w-full rounded flex items-center text-slate-900 gap-4 px-3 py-4'>
-                    <img src='/cross.svg' className='w-8 h-8' />
-                    <div>
-                        <h4 className='font-bold text-lg'> {truncateText(player1, 5)} </h4>
-                        <p className="text-sm">{x}</p>
+        <div className='w-[650px] bg-white rounded shadow p-7'>
+            <div className="flex items-center justify-between mb-4">
+                <h4 className="text-slate-700 font-bold text-2xl mb-3 text-left">TicTacToe Game</h4>
+                <button className="w-10 h-10 bg-slate-900 text-white flex items-center justify-center text-sm rounded-md" onClick={resetGame}> <RotateCcw /></button>
+            </div>
+            <hr />
+            <div className="grid grid-cols-3 gap-7 my-4">
+                <div className="flex flex-col gap-2">
+                    <p className='text-slate-500 bg-slate-50 rounded-full text-sm flex items-center gap-2 w-max mx-auto px-5 py-1'>
+                        Turn of
+                        <img src={turn ? '/cross.svg' : '/o.svg'} className='w-4 h-4 bg-white rounded-full p-[2px]' alt="Cross" />
+                    </p>
+                    <div className='bg-slate-50 border border-slate-200 w-full rounded flex items-center text-slate-900 gap-4 px-5 py-3'>
+                        <img src='/cross.svg' className='w-8 h-8' />
+                        <div>
+                            <h4 className='font-bold text-base'> {truncateText(player1, 5)} </h4>
+                            <p className="text-sm">{x}</p>
+                        </div>
+                    </div>
+                    <div className='bg-slate-50 border border-slate-200 w-full rounded flex items-center text-slate-900 gap-4 px-5 py-3'>
+                        <img src='/o.svg' className='w-8 h-8' />
+                        <div>
+                            <h4 className='font-bold text-base'> {truncateText(player2, 5)} </h4>
+                            <p className="text-sm">{O}</p>
+                        </div>
+                    </div>
+                    <hr className='my-2' />
+                    <div className='bg-slate-50 border border-slate-200 w-full rounded flex items-center justify-between text-slate-900 gap-4 px-5 py-3'>
+                        <h4 className='font-bold text-base'> Drawn </h4>
+                        <p className="text-sm">{drawCount}</p>
+                    </div>
+                    <div className='bg-slate-50 border border-slate-200 w-full rounded flex items-center justify-between text-slate-900 gap-4 px-5 py-3'>
+                        <h4 className='font-bold text-base'> Played </h4>
+                        <p className="text-sm">{playedCount}</p>
                     </div>
                 </div>
-                <div className='bg-white w-full rounded flex items-center text-slate-900 gap-4 px-3 py-4'>
-                    <img src='/o.svg' className='w-8 h-8' />
-                    <div>
-                        <h4 className='font-bold text-lg'> {truncateText(player2, 5)} </h4>
-                        <p className="text-sm">{O}</p>
-                    </div>
+                <div className="col-span-2 grid grid-cols-3 gap-4">
+                    {data.map((item, key) => (
+                        <button
+                            className="bg-slate-50 border border-slate-200 rounded flex items-center p-7 aspect-square"
+                            onClick={() => handleClick(key)}
+                        >
+                            {item == "X" ? <img src='/cross.svg' className='w-full h-full' /> : null}
+                            {item == "O" ? <img src='/o.svg' className='w-full h-full' /> : null}
+                        </button>
+                    ))}
                 </div>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-                {data.map((item, key) => (
-                    <button
-                        className="bg-white rounded flex items-center p-7 w-24 h-24"
-                        onClick={() => handleClick(key)}
-                    >
-                        {item == "X" ? <img src='/cross.svg' className='w-full h-full' /> : null}
-                        {item == "O" ? <img src='/o.svg' className='w-full h-full' /> : null}
-                    </button>
-                ))}
-            </div>
-            <div className="mx-auto mt-3">
-
-                <button className='w-full h-10 bg-red-100 font-bold text-red-900 rounded' onClick={resetGame}>Reset Game</button>
             </div>
             <AlertDialogs open={isDialogOpen} onClose={closeDialog} winner={win} onClick={resetBoard} />
             <AlertDialog defaultOpen={true}>
@@ -174,7 +202,7 @@ const Board = () => {
                 </AlertDialogContent>
             </AlertDialog>
 
-        </>
+        </div>
     )
 }
 
