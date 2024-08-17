@@ -121,14 +121,14 @@ const Board = () => {
     }
 
     return (
-        <div className='w-[650px] bg-white rounded shadow p-7'>
+        <div className='max-w-full w-[650px] bg-white rounded shadow p-7'>
             <div className="flex items-center justify-between mb-4">
-                <h4 className="text-slate-700 font-bold text-2xl mb-3 text-left">TicTacToe Game</h4>
+                <h4 className="text-slate-700 font-bold text-lg sm:text-2xl mb-3 text-left">TicTacToe Game</h4>
                 <button className="w-10 h-10 bg-slate-900 text-white flex items-center justify-center text-sm rounded-md" onClick={resetGame}> <RotateCcw /></button>
             </div>
             <hr />
-            <div className="grid grid-cols-3 gap-7 my-4">
-                <div className="flex flex-col gap-2">
+            <div className="grid sm:grid-cols-3 gap-7 my-4">
+                <div className="flex flex-wrap sm:flex-col gap-2">
                     <p className='text-slate-500 bg-slate-50 rounded-full text-sm flex items-center gap-2 w-max mx-auto px-5 py-1'>
                         Turn of
                         <img src={turn ? '/cross.svg' : '/o.svg'} className='w-4 h-4 bg-white rounded-full p-[2px]' alt="Cross" />
@@ -157,7 +157,7 @@ const Board = () => {
                         <p className="text-sm">{playedCount}</p>
                     </div>
                 </div>
-                <div className="col-span-2 grid grid-cols-3 gap-4">
+                <div className="sm:col-span-2 grid grid-cols-3 gap-4 p-3">
                     {data.map((item, key) => (
                         <button
                             className="bg-slate-50 border border-slate-200 rounded flex items-center p-7 aspect-square"
